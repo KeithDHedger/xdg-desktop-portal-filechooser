@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+#©K. D. Hedger. Wed 20 Nov 14:39:31 GMT 2024 keithdhedger@gmail.com
+#
+#This file (xdgportalscript) is part of xdg-desktop-portal-filechooser.
+#
+#xdg-desktop-portal-filechooser is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#xdg-desktop-portal-filechooser is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with xdg-desktop-portal-filechooser.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+#QT_LOGGING_RULES="*.debug=false"
+#export QT_LOGGING_RULES
+
+set -o noglob
+#LOGFILE=/tmp/xdgportalscript.log
+#export LOGFILE
+#
+#echo "XXXXXX" >> $LOGFILE
+#echo 1 $SFM_PATH >> $LOGFILE
+#echo 2 $SFM_MULTIPLE >> $LOGFILE
+#echo 3 $SFM_DIRECTORY >> $LOGFILE
+#echo 4 $SFM_SAVE >> $LOGFILE
+#echo 5 $SFM_NAME >> $LOGFILE
+#echo 6 $SFM_FILT >> $LOGFILE
+
+hold=$IFS
+IFS="|"
+
+if [ -e ~/.config/xdgfilechooser.conf ];then
+	. ~/.config/xdgfilechooser.conf
+else
+	USEDIALOG=customdialog
+fi
+
+/usr/libexec/$USEDIALOG "$SFM_PATH" "$SFM_MULTIPLE" "$SFM_DIRECTORY" "$SFM_SAVE" "$SFM_NAME" $SFM_FILT|tr '\n' '\0'  2>/dev/null
+
+IFS=$hold
+set +o noglob
+
+exit 0
+
