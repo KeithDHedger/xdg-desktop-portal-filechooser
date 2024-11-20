@@ -1,0 +1,7 @@
+customdialogsrc/customdialog
+portal/filechooser
+qtdialog/qtdialog
+*.o
+.deps
+.dirstamp
+portal/*.service
