@@ -3,6 +3,10 @@
 A customizable file dialog chooser for use with xdg-desktop-portal.<br>
 Default is to use the built in custom filed dialog, you can also select a qt filedialog, with more to come.<br>
 <br>
+Based on original code here:<br>
+<a href="https://github.com/capezotte/xdg-desktop-portal-scriptfm">https://github.com/capezotte/xdg-desktop-portal-scriptfm</a>
+<br>
+<br>
 <b>Installation:</b><br>
 <code>
 make<br>
