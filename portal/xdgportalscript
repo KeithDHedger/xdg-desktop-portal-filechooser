@@ -22,16 +22,16 @@
 #export QT_LOGGING_RULES
 
 set -o noglob
-#LOGFILE=/tmp/xdgportalscript.log
-#export LOGFILE
-#
-#echo "XXXXXX" >> $LOGFILE
-#echo 1 $SFM_PATH >> $LOGFILE
-#echo 2 $SFM_MULTIPLE >> $LOGFILE
-#echo 3 $SFM_DIRECTORY >> $LOGFILE
-#echo 4 $SFM_SAVE >> $LOGFILE
-#echo 5 $SFM_NAME >> $LOGFILE
-#echo 6 $SFM_FILT >> $LOGFILE
+LOGFILE=/tmp/xdgportalscript.log
+export LOGFILE
+
+echo "XXXXXX" >> $LOGFILE
+echo 1 $SFM_PATH >> $LOGFILE
+echo 2 $SFM_MULTIPLE >> $LOGFILE
+echo 3 $SFM_DIRECTORY >> $LOGFILE
+echo 4 $SFM_SAVE >> $LOGFILE
+echo 5 $SFM_NAME >> $LOGFILE
+echo 6 $SFM_FILT >> $LOGFILE
 
 hold=$IFS
 IFS="|"
@@ -42,6 +42,7 @@ else
 	USEDIALOG=customdialog
 fi
 
+echo "$SFM_FILT" >tmp/filters
 /usr/libexec/$USEDIALOG "$SFM_PATH" "$SFM_MULTIPLE" "$SFM_DIRECTORY" "$SFM_SAVE" "$SFM_NAME" $SFM_FILT|tr '\n' '\0'  2>/dev/null
 
 IFS=$hold

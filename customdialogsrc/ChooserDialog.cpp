@@ -581,7 +581,6 @@ void chooserDialogClass::buildMainGui(void)
     this->fileList.setModel(this->fileListModel);
 
 //file list
-	//this->fileList.setStyleSheet(QString("QFrame {border-width: 1px;border-color: palette(dark); border-style: solid;}"));
 	QObject::connect(&this->fileList,&QListView::doubleClicked,[this](const QModelIndex &index)
 		{
 			QString	tdir;
@@ -681,6 +680,7 @@ void chooserDialogClass::buildMainGui(void)
 			this->selectedFilePath=text;
 		});
 
+	this->fileTypes.setMinimumSize(1,1);
 	controlsvlayout->addWidget(&this->fileTypes);
 	QObject::connect(&this->fileTypes,&QComboBox::currentTextChanged,[this](const QString &text)
 		{

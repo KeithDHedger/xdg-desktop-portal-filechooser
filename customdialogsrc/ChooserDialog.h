@@ -112,7 +112,6 @@ class chooserDialogClass
 		int					maxRecents=21;
 		QString				recentFoldersPath;
 		QString				recentFilesPath;
-		//QFuture<void>		future;
 
 		void					buildMainGui(void);
 		void					setSideList(void);
