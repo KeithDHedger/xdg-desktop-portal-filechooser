@@ -12,7 +12,7 @@ install: $(PROGNAME)
 	strip --strip-all $(DESTDIR)$(LIBEXECDIR)/$(PROGNAME)
 
 $(PROGNAME):
-	g++ `pkg-config --cflags --libs Qt5Gui Qt5Widgets` -fPIC *.cpp -o $(PROGNAME)
+	g++ `pkg-config --cflags --libs Qt5Gui Qt5Widgets Qt5Concurrent` -fPIC *.cpp -o $(PROGNAME)
 
 clean:
 	rm -f $(PROGNAME)

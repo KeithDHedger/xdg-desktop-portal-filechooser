@@ -76,7 +76,13 @@ int main(int argc, char **argv)
 		chooser.fileTypes.hide();
 
 	chooser.dialogWindow.exec();
-
+//wait for image loader thread to quit
+	if(chooser.running==true)
+		{
+			chooser.running=false;
+			chooser.isdone=false;
+			while(chooser.isdone==false);
+		}
 	qDebug()<<"Dir:"<<chooser.startDir;
 	qDebug()<<"Filename:"<<chooser.selectedFileName;
 	qDebug()<<"Filepath:"<<chooser.selectedFilePath;
@@ -95,19 +101,12 @@ int main(int argc, char **argv)
 			if(chooser.useMulti==true)
 				{
 					for(int j=0;j<chooser.multiFileList.count();j++)
-						//printf("%s:/:",chooser.multiFileList.at(j).toStdString().c_str());
-						//printf("%s\0\n\0",chooser.multiFileList.at(j).toStdString().c_str());
-						//printf("%s\0\0\0\n",chooser.multiFileList.at(j).toStdString().c_str());
 						printf("%s\n",chooser.multiFileList.at(j).toStdString().c_str());
-					//printf(":/:");
-					//printf("\0");
 					printf("\n");
 				}
 			else
 				printf("%s",chooser.selectedFilePath.toStdString().c_str());
 		}
-//else
-//	printf("%s",chooser.realFolderPath.toStdString().c_str());
 
 	return (0);
 }

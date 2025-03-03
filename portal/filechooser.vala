@@ -151,6 +151,7 @@ public class FileRequest : ScriptRequest
 					else if(k=="current_folder")
 						{
 							path=(string)v.get_bytestring();
+							//stderr.printf("filename=-->>>%s<<<<--\n",path);
 						}
 					else if(k=="filters")
 						{

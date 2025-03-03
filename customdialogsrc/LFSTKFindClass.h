@@ -86,8 +86,14 @@ class LFSTK_findClass
 		std::vector<dataStruct> data;
 		bool		caseSensitive=true;
 
-	private:
+
 		void		deleteData(void);
+
+
+
+
+
+	private:
 		bool		fileTypeTest(int filetype);
 
 		bool		ignoreFolders=false;

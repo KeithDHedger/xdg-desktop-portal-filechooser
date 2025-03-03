@@ -41,11 +41,15 @@
 #include <QGuiApplication>
 #include <QSettings>
 #include <QMap>
+#include  <QtConcurrent>
+
+#include <unistd.h>
 
 #include "LFSTKFindClass.h"
 #include "LFSTKUtilityClass.h"
 
 #define MAXIMAGESIZETOTHUMB 2000000
+//#define MAXIMAGESIZETOTHUMB 50000
 
 enum class chooserDialogType{saveDialog,loadDialog,folderDialog};
 
@@ -81,6 +85,8 @@ class chooserDialogClass
 		QLineEdit			fileNameEdit;
 		QComboBox			fileTypes;
 
+		bool					running=false;
+		bool					isdone=true;
 	private:
 		QComboBox			folderPaths;
 		QListView			fileList;
@@ -106,6 +112,7 @@ class chooserDialogClass
 		int					maxRecents=21;
 		QString				recentFoldersPath;
 		QString				recentFilesPath;
+		//QFuture<void>		future;
 
 		void					buildMainGui(void);
 		void					setSideList(void);
@@ -117,5 +124,7 @@ class chooserDialogClass
 		void					setFileData(void);
 		void					setFavs(void);
 		void					setFolderPathsDrop(void);
+
+		void					updateImagesThread(void);
 };
 #endif

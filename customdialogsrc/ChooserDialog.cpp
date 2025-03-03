@@ -47,7 +47,12 @@ QIcon chooserDialogClass::getFileIcon(QString path)
 	QIcon				icon;
 	QMimeDatabase		db;
 	QString				realpath(QFileInfo(path).canonicalFilePath());
-    QMimeType			type=db.mimeTypeForFile(realpath);
+	QMimeType			type;
+
+	if(realpath.isEmpty()==true)
+		type=db.mimeTypeForFile(path);
+	else
+		type=db.mimeTypeForFile(realpath);
 
 	if(type.name().compare("application/x-desktop")==0)
 		{
@@ -61,10 +66,7 @@ QIcon chooserDialogClass::getFileIcon(QString path)
 		{
 			if(type.name().contains("image"))
 				{
-					if((QFileInfo(path).size()<MAXIMAGESIZETOTHUMB) && (this->showThumbsInList==true))
-						icon=QIcon(path);
-					else
-						icon=QIcon::fromTheme(type.iconName());
+					icon=QIcon::fromTheme("image");
 				}
 			else
 				{
@@ -73,6 +75,7 @@ QIcon chooserDialogClass::getFileIcon(QString path)
 		}
 	if(icon.isNull()==true)
 		icon=QIcon::fromTheme("application-octet-stream");
+
 	return(icon);
 }
 
@@ -88,11 +91,67 @@ void chooserDialogClass::setFileListMode(QListView::ViewMode mode)
 	this->fileList.setViewMode(mode);
 }
 
+void chooserDialogClass::updateImagesThread(void)
+{
+	QString			t;
+	QMimeDatabase	db;
+	QStandardItem	*si=NULL;
+	QString			realpath;
+	QMimeType		type;
+	QPixmap			pms;
+
+	this->running=true;
+	this->isdone=false;
+	for(int j=0;j<this->fileListModel->rowCount();j++)
+		{
+			if(this->running==false)
+				{
+					this->isdone=true;
+					this->running=false;
+					return;
+				}
+			si=this->fileListModel->item(j);
+			if(si!=nullptr)
+				{
+					t=QFileInfo(this->startDir+"/"+si->data(Qt::UserRole).toString()).absoluteFilePath();
+					realpath=QFileInfo(t).canonicalFilePath();
+
+					if(realpath.isEmpty()==true)
+						continue;
+
+					type=db.mimeTypeForFile(realpath);
+
+					if(type.name().contains("image"))
+						{
+							pms=QPixmap(realpath).scaled(128,128,Qt::IgnoreAspectRatio,Qt::FastTransformation) ;
+							QIcon ic(pms);
+							if(ic.isNull()==false)
+								{
+									if(this->running!=false)
+										si->setIcon(ic);
+								}
+						}
+				}
+		}
+	this->isdone=true;
+	this->running=false;
+}
+
 void chooserDialogClass::setFileList(void)
 {
 	QStandardItem	*item;
+	QFuture<void>	future;
+
+//wait for image loader thread to quit
+	if(this->running==true)
+		{
+			this->running=false;
+			this->isdone=false;
+			while(this->isdone==false);
+		}
 
 	this->fileListModel->clear();
+	this->gFind.deleteData();
 	this->gFind.LFSTK_setIncludeHidden(this->showHidden);
 	this->gFind.LFSTK_findFiles(this->startDir.toStdString().c_str());
 	this->gFind.LFSTK_sortByTypeAndName();
@@ -124,6 +183,7 @@ void chooserDialogClass::setFileList(void)
 		}
 	this->fileList.scrollToTop();
 	this->setFolderPathsDrop();
+	future=QtConcurrent::run(this,&chooserDialogClass::updateImagesThread);
 }
 
 void chooserDialogClass::setSideList(void)
@@ -550,7 +610,7 @@ void chooserDialogClass::buildMainGui(void)
 //side list
 	QObject::connect(&this->sideList,&QListView::clicked,[this](const QModelIndex &index)
 		{
-				this->selectSideItem(index);
+			this->selectSideItem(index);
 		});
 
 	QObject::connect(&this->sideList,&QListView::doubleClicked,[this](const QModelIndex &index)
