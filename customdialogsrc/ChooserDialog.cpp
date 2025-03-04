@@ -172,15 +172,17 @@ void chooserDialogClass::setFileList(void)
 				{
 					item=new QStandardItem(this->getFileIcon(this->startDir+"/"+gFind.data.at(j).name.c_str()),gFind.data.at(j).name.c_str());
 				}
+
 			if((gFind.data.at(j).fileType==FOLDERTYPE) || (gFind.data.at(j).fileType==FOLDERLINKTYPE))
 				item->setDragEnabled(true);
 			else
 				item->setDragEnabled(false);
-			
+
 			item->setData(gFind.data.at(j).name.c_str(),Qt::UserRole);
 			item->setStatusTip(this->startDir+"/"+gFind.data.at(j).name.c_str());
 			this->fileListModel->appendRow(item);
 		}
+
 	this->fileList.scrollToTop();
 	this->setFolderPathsDrop();
 	future=QtConcurrent::run(this,&chooserDialogClass::updateImagesThread);
@@ -446,7 +448,12 @@ void chooserDialogClass::setFileData(void)
 	QString				recentfiles;
 
 	this->startDir=QFileInfo(this->startDir).absoluteFilePath();
-	this->selectedFilePath=QFileInfo(this->startDir+"/"+this->fileNameEdit.text()).absoluteFilePath();
+
+	if(this->wantRealPath==true)
+		this->selectedFilePath=QFileInfo(this->startDir+"/"+this->fileNameEdit.text()).symLinkTarget();
+	else
+		this->selectedFilePath=QFileInfo(this->startDir+"/"+this->fileNameEdit.text()).absoluteFilePath();
+	
 	this->selectedFileName=this->fileNameEdit.text();
 
 	this->realName=QFileInfo(QFileInfo(this->selectedFilePath).canonicalFilePath()).fileName();
@@ -510,7 +517,6 @@ void chooserDialogClass::setFileData(void)
 					f.link(recentfiles);
 				}
 		}
-//	prefs.setValue("size",this->dialogWindow.size());
 	QRect rg;
 	QRect rf;
 	rg=this->dialogWindow.geometry();
@@ -584,7 +590,10 @@ void chooserDialogClass::buildMainGui(void)
 	QObject::connect(&this->fileList,&QListView::doubleClicked,[this](const QModelIndex &index)
 		{
 			QString	tdir;
-			tdir=QFileInfo(this->startDir+"/"+index.data(Qt::UserRole).toString()).absoluteFilePath();
+			if(this->wantRealPath==true)
+				tdir=QFileInfo(this->startDir+"/"+index.data(Qt::UserRole).toString()).canonicalFilePath();
+			else
+				tdir=QFileInfo(this->startDir+"/"+index.data(Qt::UserRole).toString()).absoluteFilePath();
 
 			if(QFileInfo(tdir).isDir()==false)
 				{
@@ -599,6 +608,7 @@ void chooserDialogClass::buildMainGui(void)
 						this->fileNameEdit.setText("");
 					this->setFileList();
 				}
+			this->wantRealPath=false;
 		});
 
 	QObject::connect(&this->fileList,&QListView::clicked,[this](const QModelIndex &index)
@@ -610,6 +620,10 @@ void chooserDialogClass::buildMainGui(void)
 	QObject::connect(&this->sideList,&QListView::clicked,[this](const QModelIndex &index)
 		{
 			this->selectSideItem(index);
+			if((index.data(Qt::DisplayRole).toString().compare("Recent Folders")==0) || (index.data(Qt::DisplayRole).toString().compare("Recent Files")==0))
+				this->wantRealPath=true;
+			else
+				this->wantRealPath=false;
 		});
 
 	QObject::connect(&this->sideList,&QListView::doubleClicked,[this](const QModelIndex &index)
