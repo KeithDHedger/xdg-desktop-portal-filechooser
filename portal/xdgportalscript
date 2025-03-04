@@ -18,8 +18,8 @@
 #along with xdg-desktop-portal-filechooser.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-#QT_LOGGING_RULES="*.debug=false"
-#export QT_LOGGING_RULES
+QT_LOGGING_RULES="*.debug=false"
+export QT_LOGGING_RULES
 
 set -o noglob
 #LOGFILE=/tmp/xdgportalscript.log

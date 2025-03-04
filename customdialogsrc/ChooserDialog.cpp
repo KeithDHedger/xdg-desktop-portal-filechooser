@@ -216,11 +216,13 @@ void chooserDialogClass::setSideList(void)
 	this->sideListModel->appendRow(item);
 
 //recent files
-	item=new QStandardItem(QIcon::fromTheme("folder-saved-search"),"Recent Files");
-	fullFilePathData=this->recentFilesPath;
-	item->setData(fullFilePathData,Qt::UserRole);
-	this->sideListModel->appendRow(item);
-
+	if(this->dialogType!=chooserDialogType::folderDialog)
+		{
+			item=new QStandardItem(QIcon::fromTheme("folder-saved-search"),"Recent Files");
+			fullFilePathData=this->recentFilesPath;
+			item->setData(fullFilePathData,Qt::UserRole);
+			this->sideListModel->appendRow(item);
+		}
 	item=new QStandardItem("");
 	item->setEnabled(false);
 	this->sideListModel->appendRow(item);
@@ -620,7 +622,7 @@ void chooserDialogClass::buildMainGui(void)
 	QObject::connect(&this->sideList,&QListView::clicked,[this](const QModelIndex &index)
 		{
 			this->selectSideItem(index);
-			if((index.data(Qt::DisplayRole).toString().compare("Recent Folders")==0) || (index.data(Qt::DisplayRole).toString().compare("Recent Files")==0))
+			if(index.row()==recentFolders || index.row()==recentFiles)
 				this->wantRealPath=true;
 			else
 				this->wantRealPath=false;

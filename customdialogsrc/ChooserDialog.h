@@ -49,8 +49,8 @@
 #include "LFSTKUtilityClass.h"
 
 #define MAXIMAGESIZETOTHUMB 2000000
-//#define MAXIMAGESIZETOTHUMB 50000
 
+enum {computer=0,home,recentFolders,recentFiles};
 enum class chooserDialogType{saveDialog,loadDialog,folderDialog};
 
 class chooserDialogClass
