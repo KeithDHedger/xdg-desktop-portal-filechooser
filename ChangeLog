@@ -1,5 +1,5 @@
 0.1.0
-dont show recent files in side list when using folder chooser.
+Dont show recent files in side list when using folder chooser.
 Recent folders/files now resolve to the real file.
 Fixed filter combobox being too large with lots of filters ( calibre I'm looking at you! ).
 Load images in filelist in background.
