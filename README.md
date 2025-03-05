@@ -1,31 +1,39 @@
 # xdg-desktop-portal-filechooser
 
-A customizable file dialog chooser for use with xdg-desktop-portal.<br>
-Default is to use the built in custom filed dialog, you can also select a qt filedialog, with more to come.<br>
-<br>
-Based on original code here:<br>
+A customizable file dialog chooser for use with xdg-desktop-portal. 
+
+![ ](chooser.png "chhoser.png")
+
+Default is to use the built in custom filed dialog, you can also select a qt filedialog, with more to come. 
+####
+Based on original code here:
 <a href="https://github.com/capezotte/xdg-desktop-portal-scriptfm">https://github.com/capezotte/xdg-desktop-portal-scriptfm</a>
-<br>
-<br>
-<b>Installation:</b><br>
-<code>
-make<br>
-sudo make install<br>
-</code><br>
-To select what file dialog to use create xdgfilechooser.conf in ~/.config like so:<br>
-<code>#!/bin/bash<br>
-<br>
-#USEDIALOG=qtdialog<br>
-USEDIALOG=customdialog</code><br>
-<br>
-Comment/uncomment your prefered filedialog<br>
-<br>
-To start the portal run:<br>
-<code>SFM_FILE_SCRIPT='/usr/share/filechooserportal/xdgportalscript' '/usr/libexec/filechooser'</code><br>
-<br>
-Some where in your start up scripts ( this will vary by distro, probably adding to rc.local will work fine ).<br>
-<br>
-<br>
-<b>TODO:</b><br>
-gtk chooser.<br>
-lxqt chooser.<br>
+###
+**Installation:**
+```console
+make
+sudo make install
+
+````
+To select what file dialog to use create xdgfilechooser.conf in ~/.config like so:
+````console
+#!/bin/bash
+
+#USEDIALOG=qtdialog
+USEDIALOG=customdialog
+
+````
+Comment/uncomment your prefered filedialog
+#
+**To start the portal run:**
+```console
+SFM_FILE_SCRIPT='/usr/share/filechooserportal/xdgportalscript' '/usr/libexec/filechooser'
+
+````
+Some where in your start up scripts ( this will vary by distro, probably adding to rc.local will work fine ).
+#
+**TODO:**
+
+gtk chooser.
+
+lxqt chooser.
