@@ -30,6 +30,12 @@ Comment/uncomment your prefered filedialog
 SFM_FILE_SCRIPT='/usr/share/filechooserportal/xdgportalscript' '/usr/libexec/filechooser'
 
 ````
+
+Now defaults to building a qt6 based filechooser, if tou only have qt5 installed change line 5 in the topmost Makefile from:  
+USEQT6 = 1  
+To:
+USEQT6 = 0  
+
 Some where in your start up scripts ( this will vary by distro, probably adding to rc.local will work fine ).
 #
 **TODO:**

@@ -1,3 +1,7 @@
+0.2.0
+Switched default build to qt6.
+Added qt6 build.
+
 0.1.0
 Dont show recent files in side list when using folder chooser.
 Recent folders/files now resolve to the real file.
