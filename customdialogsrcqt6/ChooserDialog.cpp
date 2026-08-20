@@ -156,6 +156,7 @@ void chooserDialogClass::buildMainGui(void)
 			this->fileEntryTextEdited(text);
 		});
 
+	this->fileTypes.setMinimumContentsLength(64);
 	controlsvlayout->addWidget(&this->fileTypes);
 	QObject::connect(&this->fileTypes,&QComboBox::currentTextChanged,[this](const QString &text)
 		{

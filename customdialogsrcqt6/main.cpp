@@ -21,7 +21,6 @@
 //#include <QApplication>
 //#include <QSettings>
 
-//#include "ChooserDialog.h"
 #include "globals.h"
 
 enum {PATH=1,MULTIPLE,DIRECTORY,SAVE,FILENAME,FILTER};
@@ -43,9 +42,6 @@ int main(int argc, char **argv)
 
 	chooserDialogClass	chooser(type,QString(argv[FILENAME]),QString(argv[PATH]));
 
-	if(QString(argv[FILENAME]).isEmpty()==false)
-		chooser.filepathEdit.setText(QString(argv[FILENAME]));
-
 	if(QString(argv[MULTIPLE]).isEmpty()==false)
 		chooser.setMultipleSelect(true);
 
@@ -65,6 +61,7 @@ int main(int argc, char **argv)
 	chooser.setShowImagesInList(true);
 
 	chooser.dialogWindow.exec();
+//TODO//
 ////wait for image loader thread to quit
 //	if(chooser.running==true)
 //		{

@@ -22,11 +22,6 @@ class chooserDialogClass
 		void					setMultipleSelect(bool select);
 		void					addFileTypes(QString types);
 
-
-
-
-QLineEdit			filepathEdit;
-
 	private:
 
 //main
@@ -40,6 +35,7 @@ QLineEdit			filepathEdit;
 		QListView			sideList;
 		QStandardItemModel	*sideListModel;
 
+		QLineEdit			filepathEdit;
 		QComboBox			fileTypes;
 
 		QLabel				previewIcon;
