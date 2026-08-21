@@ -1,3 +1,22 @@
+/*
+ *
+ * ©K. D. Hedger. Fri 21 Aug 16:59:10 BST 2026 keithdhedger@gmail.com
+
+ * This file (ChooserDialog.cpp) is part of xdg-desktop-portal-filechooser.
+
+ * xdg-desktop-portal-filechooser is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * xdg-desktop-portal-filechooser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with xdg-desktop-portal-filechooser.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #include "ChooserDialog.h"
 
@@ -32,7 +51,7 @@ chooserDialogClass::chooserDialogClass(chooserDialogType type,QString name,QStri
 				this->currentFolderPath=prefs.value("lastsavefolder").toString();
 			else
 				this->currentFolderPath=startfolder;
-			this->filepathEdit.setText(name);
+			this->filepathEdit->setText(name);
 		}
 
 	if((this->currentFolderPath.isEmpty()==true) || (QFileInfo(this->currentFolderPath).exists()==false))
@@ -150,11 +169,9 @@ void chooserDialogClass::buildMainGui(void)
 			this->setFileList(text);
 		});
 	controlsvlayout->addWidget(this->folderCombo);
-	controlsvlayout->addWidget(&this->filepathEdit);
-	QObject::connect(&this->filepathEdit,&QLineEdit::textEdited,[this](const QString &text)
-		{
-			this->fileEntryTextEdited(text);
-		});
+	this->filepathEdit=new QT_lineEditCompleterClass("",&this->dialogWindow);
+	this->filepathEdit->setCompleteType(STRINGCOMPLETE);
+	controlsvlayout->addWidget(this->filepathEdit);
 
 	this->fileTypes.setMinimumContentsLength(64);
 	controlsvlayout->addWidget(&this->fileTypes);
@@ -242,12 +259,12 @@ void chooserDialogClass::buildMainGui(void)
 	this->setSideList();
 	////this->setFileList();
 //	if(this->saveDialog==false)
-//		this->filepathEdit.setText("");
+//		this->filepathEdit->setText("");
 //	else
 //		{
 //			this->selectedFilePath=this->localWD+"/"+this->saveName;
 //			this->selectedFileName=this->saveName;
-//			this->filepathEdit.setText(this->saveName);
+//			this->filepathEdit->setText(this->saveName);
 //		}
 	this->fileList.setDragEnabled(true);
 	this->sideList.setAcceptDrops(true);
@@ -258,6 +275,58 @@ void chooserDialogClass::buildMainGui(void)
 	QObject::connect(this->fileList.selectionModel(),&QItemSelectionModel::selectionChanged,[this](const QItemSelection &selected,const QItemSelection &deselected)
 		{
 			this->fileListSelectionChanged();
+		});
+
+	this->filepathEdit->useInternaleSC=false;
+	this->pathActivateKey=new QShortcut(QKeySequence("TAB"),&this->dialogWindow);
+	this->pathActivateKey->setContext(Qt::WidgetWithChildrenShortcut);
+	QObject::connect(this->pathActivateKey,&QShortcut::activated,[this]()
+		{
+			this->filepathEdit->doActivateKey();
+		});
+
+	this->pathCancelKey=new QShortcut(QKeySequence("Esc"),&this->dialogWindow);
+	this->pathCancelKey->setContext(Qt::WidgetWithChildrenShortcut);
+	QObject::connect(this->pathCancelKey,&QShortcut::activated,[this]()
+		{
+			this->filepathEdit->doCancelKey();
+		});
+
+	QObject::connect(this->filepathEdit,&QT_lineEditCompleterClass::textEdited,[this](const QString &text)
+		{
+	//	qDebug()<<"textEdited";
+			if(this->filepathEdit->text().isEmpty()==true && QGuiApplication::queryKeyboardModifiers()==Qt::NoModifier)
+				{
+					this->fileList.clearSelection();
+					this->apply->setEnabled(false);
+				}
+		});
+
+	QObject::connect(this->filepathEdit,&QT_lineEditCompleterClass::editingFinished,[this]()
+		{
+//		qDebug()<<"editingFinished";
+			QModelIndex				index;
+			QList<QStandardItem*>	foundItems=this->fileListModel->findItems(this->filepathEdit->text(),Qt::MatchStartsWith);
+			if(foundItems.size()>0)
+				{
+					index=this->fileListModel->indexFromItem(foundItems.at(0));
+					this->fileList.setCurrentIndex(index);
+				}
+		});
+
+	QObject::connect(this->filepathEdit,&QT_lineEditCompleterClass::textChanged,[this](const QString &text)
+		{
+//			qDebug()<<"textChanged";
+		if(this->filepathEdit->text().isEmpty()==false && QGuiApplication::queryKeyboardModifiers()==Qt::NoModifier)
+				{
+					QModelIndex				index;
+					QList<QStandardItem*>	foundItems=this->fileListModel->findItems(text,Qt::MatchStartsWith);
+					if(foundItems.size()==1)
+						{
+							index=this->fileListModel->indexFromItem(foundItems.at(0));
+							this->fileList.setCurrentIndex(index);
+						}
+				}
 		});
 }
 
@@ -446,8 +515,8 @@ void chooserDialogClass::setExitData(bool valid)
 				{
 					if(this->multiFileList.count()==0)
 						{
-							if(this->filepathEdit.text().isEmpty()==false)
-								this->multiFileList.push_back(QString("%1/%2").arg(this->currentFolderPath).arg(this->filepathEdit.text()));
+							if(this->filepathEdit->text().isEmpty()==false)
+								this->multiFileList.push_back(QString("%1/%2").arg(this->currentFolderPath).arg(this->filepathEdit->text()));
 							else
 								return;
 						}
@@ -525,14 +594,14 @@ void chooserDialogClass::setSelectedFiles(const QModelIndex &index,bool clear)
 					else
 						{
 							this->apply->setText("Choose");
-							this->filepathEdit.setText(QFileInfo(filename).fileName());
+							this->filepathEdit->setText(QFileInfo(filename).fileName());
 							this->apply->setEnabled(true);
 						}
 				}
 			else
 				this->apply->setText("Open");
 			if(this->dialogType==chooserDialogType::loadDialog)
-				this->filepathEdit.setText("");
+				this->filepathEdit->setText("");
 			if(clear==true)
 				{
 					this->multiFileList.clear();
@@ -547,21 +616,21 @@ void chooserDialogClass::setSelectedFiles(const QModelIndex &index,bool clear)
 				{
 					this->selectedFolderPath="";
 					this->apply->setText("Select");
-					this->filepathEdit.setText(QFileInfo(filename).fileName());
+					this->filepathEdit->setText(QFileInfo(filename).fileName());
 				}
 
 			if(this->dialogType==chooserDialogType::saveDialog)
 				{
 					this->selectedFolderPath="";
 					this->apply->setText("Save");
-					this->filepathEdit.setText(QFileInfo(filename).fileName());
+					this->filepathEdit->setText(QFileInfo(filename).fileName());
 				}
 	
 //			if(this->dialogType==chooserDialogType::folderDialog)
 //				{
 //					this->selectedFolderPath="";
 //					this->apply->setText("Choose");
-//					this->filepathEdit.setText(QFileInfo(filename).fileName());
+//					this->filepathEdit->setText(QFileInfo(filename).fileName());
 //				}
 		}
 	this->apply->setEnabled(true);
@@ -782,6 +851,7 @@ void chooserDialogClass::setFileList(QString dir,QDir::SortFlags sortas)
 	QDir				d=dir;
 	QDir::Filters	dfilts=QDir::System|QDir::Dirs|QDir::NoDot;
 	QFileInfoList	fl;
+	QStringList		sl;
 
 	this->multiFileList.clear();
 	this->currentFolderPath=dir;
@@ -789,14 +859,14 @@ void chooserDialogClass::setFileList(QString dir,QDir::SortFlags sortas)
 	this->apply->setEnabled(false);
 	if(this->dialogType==chooserDialogType::loadDialog)
 		{
-			this->filepathEdit.setText("");
+			this->filepathEdit->setText("");
 			if(this->fromRecents==true)
 				this->apply->setEnabled(false);
 		}
 
 	else if(this->dialogType==chooserDialogType::saveDialog)
 		{
-			if(this->filepathEdit.text().isEmpty()==false)
+			if(this->filepathEdit->text().isEmpty()==false)
 				{
 					this->apply->setEnabled(true);
 					this->apply->setText("Save");
@@ -822,7 +892,6 @@ void chooserDialogClass::setFileList(QString dir,QDir::SortFlags sortas)
 
 	if(this->fromRecents==true)
 		dfilts|=QDir::NoDotDot;
-
 
 	fl=d.entryInfoList(QStringList(),dfilts,sortas);
 
@@ -860,6 +929,8 @@ void chooserDialogClass::setFileList(QString dir,QDir::SortFlags sortas)
 				
 			if(item!=NULL)
 				{
+					if(fl[j].fileName()!="..")
+						sl<<fl[j].fileName();
 					item->setData(fl[j].filePath(),Qt::UserRole);
 
 					if(this->fromRecents==true)
@@ -872,6 +943,9 @@ void chooserDialogClass::setFileList(QString dir,QDir::SortFlags sortas)
 		}
 
 	this->fileList.scrollToTop();
+
+	this->filepathEdit->setCompleteType(STRINGCOMPLETE);
+	this->filepathEdit->setUpCompleter(sl);
 
 	this->folderCombo->blockSignals(true);
 		this->folderCombo->clear();

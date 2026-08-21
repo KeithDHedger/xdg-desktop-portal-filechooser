@@ -1,3 +1,22 @@
+/*
+ *
+ * ©K. D. Hedger. Fri 21 Aug 16:37:04 BST 2026 keithdhedger@gmail.com
+
+ * This file (ChooserDialog.h) is part of xdg-desktop-portal-filechooser.
+
+ * xdg-desktop-portal-filechooser is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * xdg-desktop-portal-filechooser is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with xdg-desktop-portal-filechooser.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 #ifndef _CHOOSERDIALOG_
 #define _CHOOSERDIALOG_
@@ -23,7 +42,6 @@ class chooserDialogClass
 		void					addFileTypes(QString types);
 
 	private:
-
 //main
 		QString				selectedFolderPath="";
 		QString				currentFolderPath="/";
@@ -35,7 +53,10 @@ class chooserDialogClass
 		QListView			sideList;
 		QStandardItemModel	*sideListModel;
 
-		QLineEdit			filepathEdit;
+		QT_lineEditCompleterClass	*filepathEdit;
+		QShortcut			*pathActivateKey;
+		QShortcut			*pathCancelKey;
+
 		QComboBox			fileTypes;
 
 		QLabel				previewIcon;
