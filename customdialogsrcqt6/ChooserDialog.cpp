@@ -838,8 +838,27 @@ void chooserDialogClass::doubleClickSideList(const QModelIndex &index)
 	else
 		dirstr=index.data(Qt::UserRole).toString();
 
+//remove dead symlinks
 	if(dirstr==this->recentFoldersPath || dirstr==this->recentFilesPath)
-		this->fromRecents=true;
+		{
+			QFileInfoList	fl;
+			QDir				d=this->recentFoldersPath;
+			fl=d.entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System);
+			for(const QFileInfo &fi : fl)
+				{
+					if(QFileInfo::exists(fi.filePath())==false)
+						QFile::remove(fi.filePath());
+				}
+	
+			d=this->recentFilesPath;
+			fl=d.entryInfoList(QDir::NoDotAndDotDot|QDir::AllEntries|QDir::System);
+			for(const QFileInfo &fi : fl)
+				{
+					if(QFileInfo::exists(fi.filePath())==false)
+						QFile::remove(fi.filePath());
+				}
+			this->fromRecents=true;
+		}
 	else
 		this->fromRecents=false;
 
