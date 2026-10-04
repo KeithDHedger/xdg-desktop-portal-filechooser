@@ -1,5 +1,5 @@
 0.2.0
-Tweaks to chooser.
+Tweaks to qt6 chooser.
 Fixed minor gui glitch in save dialog.
 Added completions to edit box.
 Fixed huge dialog when too many file types are given ( eg calibre's add books ).
